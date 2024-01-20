@@ -11,6 +11,7 @@ import img from "@/a.png"
 
 const App = () => {
   let model = useRef<tmImage.CustomMobileNet | null>(null);
+  let maxPredictions = useRef<string[] | null>(null);
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>();
@@ -30,7 +31,7 @@ const App = () => {
 
       model.current = await tmImage.load("models/asl/model.json", "models/asl/metadata.json");
       
-      const maxPredictions = model.current.getClassLabels();
+       maxPredictions.current = model.current.getClassLabels();
 
       console.log(maxPredictions);
 
@@ -74,60 +75,22 @@ const App = () => {
     const results = resultsRef.current!;
     const handLandmarks = results.multiHandLandmarks[0];
     
-
-    // const example = tf.browser.fromPixels(webcamRef.current?.video!);
-
-    const h = 720;
-    const w = 1280;
-
-    // Extract bounding box coordinates from hand landmarks
-    const minX = Math.min(...handLandmarks.map(point => point.x));
-    const maxX = Math.max(...handLandmarks.map(point => point.x));
-    const minY = Math.min(...handLandmarks.map(point => point.y));
-    const maxY = Math.max(...handLandmarks.map(point => point.y));
-  
-    // Calculate width and height of the bounding box
-    const width = maxX - minX;
-    const height = maxY - minY;
-  
-    // Resize the input image to [30, 63]
-    // const resizedImage = tf.image.resizeBilinear(tf.browser.fromPixels(webcamRef.current?.video!), [30, 63]);
-  
-
-    let imageTensor = tf.browser.fromPixels(webcamRef.current?.video!) 
-    // let imageTensor4D = tf.expandDims(imageTensor)
-
-    // const resizedImage = tf.image.resizeBilinear(tf.browser.fromPixels(webcamRef.current?.video!), [226, 226]);
-    // let imageTensor4D2 = tf.expandDims(resizedImage)
-    // const normalizedBoxes = tf.tensor2d([[minY / h, minX / w, maxY / h, maxX / w]]);
-
-
-
-    
-    // const croppedImage  = tf.image.cropAndResize(
-    //   imageTensor4D2 as tf.Tensor4D,
-    //   normalizedBoxes,
-    //   [0],
-    //   [256, 256])
-
-      
-    // const reshapedImage = croppedImage.reshape([0, 30, 63]);
-
-      
-    
-      
-  
-    // const resizedImage = tf.image.resizeBilinear(tf.browser.fromPixels(webcamRef.current?.video!), [30, 63]);
-    
-    // console.log(resizedImage);
-    // console.log(model.current?.predict(imageTensor4D2));
-
-
-    // let tfTensor = tf.browser.fromPixels(webcamRef.current?.video!);
-      // let tfTensor = tf.browser.fromPixels();
-          // model.current.predict();
+    predict();
     
   };
+
+  async function predict() {
+    // predict can take in an image, video or canvas html element
+    if(!maxPredictions.current) return;
+    const x = maxPredictions.current?.length;
+    const prediction = await model.current?.predict(webcamRef?.current?.video!);
+    for (let i = 0; i < maxPredictions.current?.length; i++) {
+      if(!prediction) continue;  
+      const classPrediction = prediction[i]?.className + ": " + prediction[i]?.probability.toFixed(2);
+      console.log(classPrediction);
+    }
+}
+
 
 
   

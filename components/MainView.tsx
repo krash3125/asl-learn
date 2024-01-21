@@ -17,6 +17,7 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>();
 
+
   const [pauseRight, setPauseRight] = useState(false);
   const [wordIndex, setWordIndex] = useState(0)
   const [letterIndex, setLetterIndex] = useState(0)
@@ -114,7 +115,7 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
       });
       camera.start();
 
-      return () => {camera.stop()} 
+      return () => { camera.stop() }
     }
   }, [onResults]);
 
@@ -136,6 +137,7 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-white">
       <div className="top-0 h-screen w-[30vw] left-0 bg-indigo-500 p-4 flex flex-col items-center text-white">
+        <img className="mt-auto h-[100px] w-[100px]" src={"/asl/" + DATA[wordIndex][letterIndex] + ".jpg"} />
         <div className={`my-auto text-[12rem] font-semibold uppercase ${pauseRight && "text-green-500"}`}>{DATA[wordIndex][letterIndex] === " " ? "_" : DATA[wordIndex][letterIndex]}</div>
 
         <div className="text-center">
@@ -148,6 +150,9 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
           })}
         </div>
 
+      </div>
+      <div className="text-center h-screen w-[70vw] grid items-center bg-indigo-500 absolute top-0 right-0 z-0 text-white text-2xl font-semibold">
+        Loading model...
       </div>
       <div className="absolute top-0 right-0 h-screen z-10 grayscale">
         <Webcam

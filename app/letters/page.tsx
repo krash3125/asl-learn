@@ -2,6 +2,6 @@ import MainView from '@/components/MainView'
 
 export default function page() {
   return (
-    <MainView DATA={["A","E","O","R","L","T","U"]} redirectLink="/home?step=2" />
+    <MainView DATA={["A","R","O","L","E","T","U"]} redirectLink="/?step=2" />
   )
 }

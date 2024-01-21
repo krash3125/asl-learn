@@ -1,5 +1,7 @@
 # ASL Learn
 
+<img src="./screenshots/s2.png" width=1600 height=900>
+
 ## Inspiration
 The inspiration behind ASL Learn stems from the desire to make learning sign language more interactive and engaging. We recognized the need for a platform that not only teaches sign language but also provides real-time feedback using image processing models. This innovative approach aims to enhance the learning experience and make it more accessible to a broader audience.
 

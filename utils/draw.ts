@@ -88,6 +88,7 @@ export const drawCanvas2 = (ctx: CanvasRenderingContext2D, results: Results) => 
         }
       })
       
+      // ctx.drawImage(results.image, 0, 0, MODEL_SIZE, MODEL_SIZE);
       ctx.drawImage(results.image,x_min*width-150, y_min*height-50, 760, (150+(y_max-y_min)*height), 0, 0, MODEL_SIZE, MODEL_SIZE);
       
     }

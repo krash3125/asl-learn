@@ -1,1 +1,1 @@
-export const MODEL_SIZE = 28;
+export const MODEL_SIZE = 200;

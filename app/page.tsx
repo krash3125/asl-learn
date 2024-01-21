@@ -11,8 +11,8 @@ import img from "@/a.png"
 import { MODEL_SIZE } from '@/utils/size';
 
 const App = () => {
-  // let model = useRef<tmImage.CustomMobileNet | null>(null);
-  let model = useRef<tf.LayersModel | null>(null);
+  let model = useRef<tmImage.CustomMobileNet | null>(null);
+  // let model = useRef<tf.LayersModel | null>(null);
   let maxPredictions = useRef<string[] | null>(null);
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,13 +34,15 @@ const App = () => {
     (async () => {
       console.log('loading model');
 
-      model.current = await tf.loadLayersModel('models/asl4/model.json');
+      // model.current = await tf.loadLayersModel('models/old_asl/model.json');
       
-      // model.current = await tmImage.load("models/asl/model.json", "models/asl/metadata.json");
+      model.current = await tmImage.load("models/asl/model.json", "models/asl/metadata.json");
+      // model.current = await tmImage.load("models/asl4/model.json", "models/asl4/metadata.json");
       // model.current = await tmImage.load("models/asl2/model.json", "models/asl2/metadata.json");
       // model.current = await tmImage.load("models/old_asl/model.json", "models/old_asl/metadata.json");
-      // maxPredictions.current = model.current.getClassLabels();
-      // console.log(maxPredictions);
+
+      maxPredictions.current = model.current.getClassLabels();
+      console.log(maxPredictions);
 
       console.log(model.current);
       console.log('done model');
@@ -85,78 +87,75 @@ const App = () => {
     predict();
   };
 
-  // async function predict() {
-  //   // predict can take in an image, video or canvas html element
-  //   if(!maxPredictions.current) return;
-  //   const x = maxPredictions.current?.length;
-  //   // const prediction = await model.current?.predict(webcamRef?.current?.video!);
-  //   const prediction = await model.current?.predict(canvasRef2?.current!);
-  //   let arr = [];
-  //   for (let i = 0; i < maxPredictions.current?.length; i++) {
-  //     if(!prediction) continue;  
-  //     const classPrediction = prediction[i]?.className + ": " + prediction[i]?.probability.toFixed(2);
-  //     arr.push(classPrediction);
-  //   }
-  //   console.log(arr);
-  // }
-
   async function predict() {
-    // let img = tf.browser.fromPixels(canvasRef2?.current!);
-    // img = tf.expandDims(img, 0)
-    // const prediction = model.current?.predict(img);
-    // //@ts-ignore
-    // const values = predict.arraySync()[0][0];
-    // // const values = predict?.dataSync();
-    // console.log(values[0]);
-
-      const tensor = tf.browser
-      .fromPixels(canvasRef2?.current!)
-      .div(tf.scalar(127.5))
-      .sub(tf.scalar(3))
-      .expandDims();
-    
-
-      const prediction = model.current!.predict(tensor);
-
-      
-      //@ts-ignore
-      const predictedLetter = prediction.argMax(1).dataSync();
-      //@ts-ignore
-      const confidence = prediction.dataSync()[0];
-      
-
-      // const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V" ,"W", "X", "Y", "Z", "del", "space", "nothing"];
-      const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-              'W', 'X', 'Y'];
-
-      const letterValue2 = LETTERS[predictedLetter];      
-
-      console.log(letterValue2)
-      setLetter(letterValue2)
-      // console.log(confidence*100)
-
-      //@ts-ignore
-      prediction.dispose();
-      //@ts-ignore
-      prediction.dispose();
-
-
-    // const mapping = ['A', 'B', 'C', 'D', 'E', "F", "G"]; // Add more letters as needed
-
-    // // Find the index of the maximum predicted value
-    // const maxIndex = values.indexOf(Math.max(...values));
-
-    // // Get the letter corresponding to the maximum predicted value
-    // const predictedLetter = mapping[maxIndex];
-
-    // // Now 'predictedLetter' contains the letter corresponding to the highest predicted value
-    // console.log(predictedLetter);
-
+    // predict can take in an image, video or canvas html element
+    if(!maxPredictions.current) return;
+    const x = maxPredictions.current?.length;
+    // const prediction = await model.current?.predict(webcamRef?.current?.video!);
+    const prediction = await model.current?.predict(canvasRef2?.current!);
+    let arr = [];
+    for (let i = 0; i < maxPredictions.current?.length; i++) {
+      if(!prediction) continue;  
+      const classPrediction = prediction[i]?.className + ": " + prediction[i]?.probability.toFixed(2);
+      arr.push(classPrediction);
+    }
+    console.log(arr);
   }
 
+  // async function predict() {
+  //   // let img = tf.browser.fromPixels(canvasRef2?.current!);
+  //   // img = tf.expandDims(img, 0)
+  //   // const prediction = model.current?.predict(img);
+  //   // //@ts-ignore
+  //   // const values = predict.arraySync()[0][0];
+  //   // // const values = predict?.dataSync();
+  //   // console.log(values[0]);
+
+  //     const tensor = tf.browser
+  //     .fromPixels(canvasRef2?.current!)
+  //     .div(tf.scalar(127.5))
+  //     .sub(tf.scalar(3))
+  //     .expandDims();
+    
+
+  //     const prediction = model.current!.predict(tensor);
+
+      
+  //     //@ts-ignore
+  //     const predictedLetter = prediction.argMax(1).dataSync();
+  //     //@ts-ignore
+  //     const confidence = prediction.dataSync()[0];
+      
+
+  //     const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V" ,"W", "X", "Y", "Z", "del", "space", "nothing"];
+      
+
+  //     const letterValue2 = LETTERS[predictedLetter];      
+
+  //     console.log(letterValue2)
+  //     setLetter(letterValue2)
+  //     // console.log(confidence*100)
+
+  //     //@ts-ignore
+  //     prediction.dispose();
+  //     //@ts-ignore
+  //     prediction.dispose();
 
 
-  
+  //   // const mapping = ['A', 'B', 'C', 'D', 'E', "F", "G"]; // Add more letters as needed
+
+  //   // // Find the index of the maximum predicted value
+  //   // const maxIndex = values.indexOf(Math.max(...values));
+
+  //   // // Get the letter corresponding to the maximum predicted value
+  //   // const predictedLetter = mapping[maxIndex];
+
+  //   // // Now 'predictedLetter' contains the letter corresponding to the highest predicted value
+  //   // console.log(predictedLetter);
+
+  // }
+
+
 
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-white">

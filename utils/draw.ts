@@ -14,43 +14,16 @@ export const drawCanvas = (ctx: CanvasRenderingContext2D, results: Results) => {
 
   if (results.multiHandLandmarks) {
     for (const landmarks of results.multiHandLandmarks) {
-        let x_max = 0
-        let y_max = 0
-        let x_min = width
-        let y_min = height
-
-      landmarks.forEach((landmark: any) => {
-        if(landmark.x > x_max){
-          x_max = landmark.x
-        }
-        if( landmark.x < x_min){
-          x_min = landmark.x
-        }
-        if( landmark.y > y_max){
-          y_max =landmark.y
-        }
-        if( landmark.y < y_min){
-          y_min = landmark.y
-        }
-      })
-      
-      // console.log(x_min*width, y_min*height, (x_max - x_min)*width, (y_max - y_min) * height)
-
-      ctx.beginPath();
-      ctx.rect(x_min*width, y_min*height, (x_max - x_min)*width, (y_max - y_min) * height);
-      ctx.stroke();
-
-      
       drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
         // color: "#00FF00",
-        color: "#8700FF",
-        lineWidth: 4,
+        color: "#6366F2",
+        lineWidth: 3,
       });
       drawLandmarks(ctx, landmarks, {
         // color: "#FF0000",
-        color: "#8700FF",
+        color: "#6366F2",
         lineWidth: 1,
-        radius: 6,
+        radius: 4,
       });
     }
   }

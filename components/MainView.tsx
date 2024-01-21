@@ -9,7 +9,7 @@ import { drawCanvas, drawCanvas2 } from '@/utils/draw';
 import { MODEL_SIZE } from '@/utils/size';
 import { redirect } from "next/navigation";
 
-const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string }) => {
+const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], redirectLink: string, testMode?: boolean }) => {
   let model = useRef<tmImage.CustomMobileNet | null>(null);
   let maxPredictions = useRef<string[] | null>(null);
   const webcamRef = useRef<Webcam>(null);
@@ -17,6 +17,7 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>();
 
+  const [handsInScreen, setHandsInScreen] = useState(false);
 
   const [pauseRight, setPauseRight] = useState(false);
   const [wordIndex, setWordIndex] = useState(0)
@@ -35,9 +36,11 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
     }
 
     if (map.get(DATA[wordIndex][letterIndex].toUpperCase()) > 0.7
+        || (DATA[wordIndex][letterIndex].toUpperCase() === "T" &&
+         map.get(DATA[wordIndex][letterIndex].toUpperCase())>0.4)
     ) {
       setPauseRight(true);
-      if (DATA.length === wordIndex + 1) {
+      if (DATA[wordIndex].length === letterIndex + 1 && DATA.length === wordIndex + 1) {
         return setWordIndex(-1);
       }
       setTimeout(() => {
@@ -64,6 +67,8 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
 
   const onResults = useCallback(async (results: Results) => {
     resultsRef.current = results;
+    // console.log(results?.multiHandLandmarks?.length > 0)
+    setHandsInScreen(results?.multiHandLandmarks?.length > 0);
     const canvasCtx = canvasRef.current!.getContext('2d')!;
     const canvasCtx2 = canvasRef2.current!.getContext('2d')!;
     drawCanvas(canvasCtx, results);
@@ -121,23 +126,24 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
 
 
   useEffect(() => {
+    console.log("handsInScreen?.current");
     if (wordIndex === -1) {
       console.log(redirectLink)
       return redirect(redirectLink);
     }
-    if (!pauseRight) {
+    if (!pauseRight && handsInScreen) {
       const interval = setInterval(predict, 250);
       return () => clearInterval(interval);
     }
   },
-    [webcamRef, redirectLink, pauseRight, wordIndex, predict, redirect])
+    [handsInScreen, webcamRef, redirectLink, pauseRight, wordIndex, predict, redirect])
 
   if (wordIndex === -1) return <div className='h-screen w-screen bg-indigo-500'></div>
 
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-white">
       <div className="top-0 h-screen w-[30vw] left-0 bg-indigo-500 p-4 flex flex-col items-center text-white">
-        <img className="mt-auto p-2 rounded-lg bg-white h-[125px] w-[125px]" src={"/asl/" + DATA[wordIndex][letterIndex].toLowerCase() + ".jpg"} />
+        {!testMode && <img className="mt-auto p-2 rounded-lg bg-white h-[125px] w-[125px]" src={"/asl/" + DATA[wordIndex][letterIndex].toLowerCase() + ".jpg"} />}
         <div className={`my-auto text-[12rem] font-semibold uppercase ${pauseRight && "text-green-500"}`}>{DATA[wordIndex][letterIndex] === " " ? "_" : DATA[wordIndex][letterIndex]}</div>
 
         <div className="text-center">

@@ -1,7 +1,7 @@
 "use client"
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import {  HAND_CONNECTIONS, Results } from "@mediapipe/hands";
-
+import { MODEL_SIZE } from '@/utils/size';
 
 export const drawCanvas = (ctx: CanvasRenderingContext2D, results: Results) => {
   const width = ctx.canvas.width;
@@ -61,6 +61,7 @@ export const drawCanvas = (ctx: CanvasRenderingContext2D, results: Results) => {
 export const drawCanvas2 = (ctx: CanvasRenderingContext2D, results: Results) => {
   const width = 1280;
   const height = 720;
+  
 
   ctx.save();
   ctx.clearRect(0, 0, width, height);
@@ -87,7 +88,7 @@ export const drawCanvas2 = (ctx: CanvasRenderingContext2D, results: Results) => 
         }
       })
       
-      ctx.drawImage(results.image,x_min*width-150, y_min*height-50, 600, (150+(y_max-y_min)*height), 0, 0, 224, 224);
+      ctx.drawImage(results.image,x_min*width-150, y_min*height-50, 760, (150+(y_max-y_min)*height), 0, 0, MODEL_SIZE, MODEL_SIZE);
       
     }
   }

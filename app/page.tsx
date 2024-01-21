@@ -6,7 +6,7 @@ import { Hands, Results } from '@mediapipe/hands';
 import * as tf from '@tensorflow/tfjs';
 import * as tmImage from '@teachablemachine/image';
 
-import { drawCanvas } from '@/utils/draw';
+import { drawCanvas, drawCanvas2 } from '@/utils/draw';
 import img from "@/a.png"
 
 const App = () => {
@@ -14,13 +14,16 @@ const App = () => {
   let maxPredictions = useRef<string[] | null>(null);
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>();
 
   const onResults = useCallback((results: Results) => {
     resultsRef.current = results;
 
     const canvasCtx = canvasRef.current!.getContext('2d')!;
+    const canvasCtx2 = canvasRef2.current!.getContext('2d')!;
     drawCanvas(canvasCtx, results);
+    drawCanvas2(canvasCtx2, results)
   }, []);
 
   useEffect(() => {
@@ -31,7 +34,8 @@ const App = () => {
 
       model.current = await tmImage.load("models/asl/model.json", "models/asl/metadata.json");
       
-       maxPredictions.current = model.current.getClassLabels();
+      
+      maxPredictions.current = model.current.getClassLabels();
 
       console.log(maxPredictions);
 
@@ -63,9 +67,11 @@ const App = () => {
       const camera = new Camera(webcamRef.current.video!, {
         onFrame: async () => {
           await hands.send({ image: webcamRef.current!.video! });
+
         },
         width: 1280,
         height: 720,
+
       });
       camera.start();
     }
@@ -83,12 +89,15 @@ const App = () => {
     // predict can take in an image, video or canvas html element
     if(!maxPredictions.current) return;
     const x = maxPredictions.current?.length;
-    const prediction = await model.current?.predict(webcamRef?.current?.video!);
+    // const prediction = await model.current?.predict(webcamRef?.current?.video!);
+    const prediction = await model.current?.predict(canvasRef2?.current!);
+    let arr = [];
     for (let i = 0; i < maxPredictions.current?.length; i++) {
       if(!prediction) continue;  
       const classPrediction = prediction[i]?.className + ": " + prediction[i]?.probability.toFixed(2);
-      console.log(classPrediction);
+      arr.push(classPrediction);
     }
+    console.log(arr);
 }
 
 
@@ -100,7 +109,7 @@ const App = () => {
       <div className="top-0 h-screen w-[30vw] left-0">
         <button onClick={OutputData}>print data</button>
       </div>
-      <div className="absolute top-0 right-0 grayscale h-screen z-10">
+      <div className="absolute top-0 right-0 h-screen z-10">
         <Webcam
           ref={webcamRef}
           audio={false}
@@ -127,6 +136,13 @@ const App = () => {
         width={1280}
         height={720}
       />
+      <canvas
+      ref={canvasRef2}
+      className="z-[66] absolute top-12 left-0"
+      width={224}
+        height={224}
+        />
+
     </div>
   );
 };

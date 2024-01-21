@@ -56,3 +56,40 @@ export const drawCanvas = (ctx: CanvasRenderingContext2D, results: Results) => {
   }
   ctx.restore();
 };
+
+
+export const drawCanvas2 = (ctx: CanvasRenderingContext2D, results: Results) => {
+  const width = 1280;
+  const height = 720;
+
+  ctx.save();
+  ctx.clearRect(0, 0, width, height);
+
+  if (results.multiHandLandmarks) {
+    for (const landmarks of results.multiHandLandmarks) {
+        let x_max = 0
+        let y_max = 0
+        let x_min = width
+        let y_min = height
+
+      landmarks.forEach((landmark: any) => {
+        if(landmark.x > x_max){
+          x_max = landmark.x
+        }
+        if( landmark.x < x_min){
+          x_min = landmark.x
+        }
+        if( landmark.y > y_max){
+          y_max =landmark.y
+        }
+        if( landmark.y < y_min){
+          y_min = landmark.y
+        }
+      })
+      
+      ctx.drawImage(results.image,x_min*width-150, y_min*height-50, 600, (150+(y_max-y_min)*height), 0, 0, 224, 224);
+      
+    }
+  }
+  ctx.restore();
+};

@@ -20,3 +20,30 @@ The development of ASL Learn provided us with valuable insights into creating an
 
 ## What's next for ASL Learn
 Looking ahead, the future of ASL Learn involves continuous improvement and expansion. We plan to refine the image processing models further, adding support for more advanced sign language gestures. Additionally, we aim to incorporate features like personalized learning plans, social interactions, and community forums to foster a collaborative learning environment for sign language enthusiasts. The journey of ASL Learn is an ongoing commitment to making sign language education inclusive and effective.
+
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/krash3125/asl-learn.git
+```
+
+Go to the project directory
+
+```bash
+  cd asl-learn
+```
+
+Install dependencies
+
+```bash
+  npm install --force
+```
+
+Run
+
+```bash
+  npm run dev
+```

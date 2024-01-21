@@ -5,12 +5,12 @@ import { Camera } from '@mediapipe/camera_utils';
 import { Hands, Results } from '@mediapipe/hands';
 import * as tf from '@tensorflow/tfjs';
 import * as tmImage from '@teachablemachine/image';
-
 import { drawCanvas, drawCanvas2 } from '@/utils/draw';
-import img from "@/a.png"
 import { MODEL_SIZE } from '@/utils/size';
 
-const WORDS_TO_SPELL = ["BABA", "DAD", "CAB", "ADD", "ADD"]
+//AEOIRHLT
+
+const WORDS_TO_SPELL = ["HELLO", "THREE", "HIRE"]
 
 const App = () => {
   let model = useRef<tmImage.CustomMobileNet | null>(null);
@@ -21,12 +21,15 @@ const App = () => {
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>();
   
+  const [pauseRight, setPauseRight] = useState(false);
   const [wordIndex, setWordIndex] = useState(0)
   const [letterIndex, setLetterIndex] = useState(0)
 
 
   const predict = async () => {
-    if(!maxPredictions.current) return;
+    if(!maxPredictions.current || wordIndex === -1) return;
+    //@ts-ignore
+    // const prediction = await model.current?.predict(webcamRef?.current.video!);
     const prediction = await model.current?.predict(canvasRef2?.current!);
     
     const map = new Map();
@@ -36,26 +39,35 @@ const App = () => {
       map.set(prediction[i]?.className, prediction[i]?.probability);
     }
 
-    console.log(WORDS_TO_SPELL[wordIndex][letterIndex])
+    // console.log(WORDS_TO_SPELL[wordIndex][letterIndex])
     
-    if(map.get(WORDS_TO_SPELL[wordIndex][letterIndex]) > 0.9){
-      console.log("correct");
-      if(WORDS_TO_SPELL[wordIndex].length === letterIndex+1){ 
-        console.log("end of word");
-        setWordIndex(wordIndex+1);
-        setLetterIndex(0);
-      }
-      else {
-        console.log("nexet letter");
-        setLetterIndex((o) => o+1);
-      }
+    if(map.get(WORDS_TO_SPELL[wordIndex][letterIndex]) > 0.7
+    ){
+      setPauseRight(true);
+      setTimeout(()=> {
+        console.log("correct");
+        if(WORDS_TO_SPELL[wordIndex].length === letterIndex+1){ 
+          console.log("end of word");
+          if(WORDS_TO_SPELL.length === wordIndex+1) {
+            setWordIndex(-1);
+          }else {
+
+            setWordIndex(wordIndex+1);
+            setLetterIndex(0);
+          }
+        }
+        else {
+          console.log("nexet letter");
+          setLetterIndex((o) => o+1);
+        }
+        setPauseRight(false);
+      }, 1000)
     }
 
-
-    tf.dispose(prediction);
-
     console.log(map);
-    console.log(tf.memory());
+    
+    tf.dispose(prediction);
+    // console.log(tf.memory());
   }
 
 
@@ -72,7 +84,7 @@ const App = () => {
     (async () => {
       console.log('loading model');
 
-      model.current = await tmImage.load("models/asl/model.json", "models/asl/metadata.json");
+      model.current = await tmImage.load("models/trained65/model.json", "models/trained65/metadata.json");
 
       maxPredictions.current = model.current.getClassLabels();
       console.log(maxPredictions);
@@ -114,26 +126,32 @@ const App = () => {
     }
   }, [onResults]);
 
-  
+  // E, T, A, O, I, N, S, R, H, and L
 
   useEffect(()=> {
-    const interval = setInterval(predict, 500);
-    return ()=>clearInterval(interval);
+    if(!pauseRight) {
+      const interval = setInterval(predict, 250);
+      return ()=> clearInterval(interval);
+    }
   }, 
-  [wordIndex, wordIndex, predict])
+  [pauseRight, wordIndex, wordIndex, predict])
 
+  if(wordIndex === -1) {
+    <div className="h-screen w-screen bg-indigo-500">
+    </div>
+  }
   
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-white">
       <div className="top-0 h-screen w-[30vw] left-0 bg-indigo-500 p-4 flex flex-col items-center text-white">
-        <div className="text-2xl font-semibold">Spell Out the Words Below</div>
-        
-        <div className="my-auto text-[12rem] font-semibold">{WORDS_TO_SPELL[wordIndex][letterIndex]}</div>
+        {/* <div className="text-2xl font-semibold">Spell Out the Words Below</div> */}
+        {/* <button onClick={predict}>Predict</button> */}
+        <div className={`my-auto text-[12rem] font-semibold ${pauseRight && "text-green-500"}`}>{WORDS_TO_SPELL[wordIndex][letterIndex]===" " ? "_" : WORDS_TO_SPELL[wordIndex][letterIndex]}</div>
 
         <div className="text-center">
           {WORDS_TO_SPELL?.map((word, wordI)=> {
-          return <div className={`text-gray-400 ${wordI === wordIndex ? "text-5xl" : "text-2xl"}`}>{word.split('')?.map((l, i) => 
-            <span className={`font-bold ${wordI === wordIndex &&i===letterIndex && "text-white"}`}>{l}</span>
+          return <div key={wordI} className={`text-gray-400 ${wordI === wordIndex ? "text-5xl" : "text-2xl"}`}>{word.split('')?.map((l, i) => 
+            <span key={wordI + "-" + i} className={`font-bold ${wordI === wordIndex && i===letterIndex && "text-white"} `}>{l}</span>
             )}
             <br />
             </div>
@@ -162,6 +180,7 @@ const App = () => {
           minScreenshotWidth={100}
         />
       </div>
+      {/* <span className={"z-[70] absolute mx-auto top-6 text-lg left-[50%] -translate-x-[50%] text-indigot-500 font-semibold"}>Correct</span> */}
       <canvas
         ref={canvasRef}
         className="z-50 absolute top-0 right-0 h-full w-[70vw] aspect-video"

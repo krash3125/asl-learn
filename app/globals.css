@@ -2,18 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* .gray2 {
-  filter: grayscale(1);
-  -webkit-filter: grayscale(1); 
-  filter: grayscale(100%); 
-} */
-
 .grayscale {
   -webkit-filter: contrast(150%) grayscale(100%) brightness(20%);
   filter: contrast(150%) grayscale(100%) brightness(20%);
 }
-
-
 
 video {
   clear: both;
@@ -34,7 +26,3 @@ video {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
 }
-
-/* .gray {
-  filter: grayscale();
-} */

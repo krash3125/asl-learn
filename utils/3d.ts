@@ -1,3 +1,5 @@
+import { Results } from "@mediapipe/hands";
+
 interface V3D {
     x: number;
     y: number;
@@ -12,3 +14,5 @@ export function distanceVector( v1:V3D, v2:V3D )
 
     return Math.sqrt( dx * dx + dy * dy + dz * dz );
 }
+
+

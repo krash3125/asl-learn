@@ -137,7 +137,7 @@ const MainView = ({ DATA, redirectLink }: { DATA: string[], redirectLink: string
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-white">
       <div className="top-0 h-screen w-[30vw] left-0 bg-indigo-500 p-4 flex flex-col items-center text-white">
-        <img className="mt-auto h-[100px] w-[100px]" src={"/asl/" + DATA[wordIndex][letterIndex] + ".jpg"} />
+        <img className="mt-auto h-[100px] w-[100px]" src={"/asl/" + DATA[wordIndex][letterIndex].toLowerCase() + ".jpg"} />
         <div className={`my-auto text-[12rem] font-semibold uppercase ${pauseRight && "text-green-500"}`}>{DATA[wordIndex][letterIndex] === " " ? "_" : DATA[wordIndex][letterIndex]}</div>
 
         <div className="text-center">

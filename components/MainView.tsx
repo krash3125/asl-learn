@@ -17,6 +17,8 @@ const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], re
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
   const resultsRef = useRef<Results>();
 
+  const [loading, setLoading] = useState(true);
+
   const [handsInScreen, setHandsInScreen] = useState(false);
 
   const [pauseRight, setPauseRight] = useState(false);
@@ -36,8 +38,8 @@ const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], re
     }
 
     if (map.get(DATA[wordIndex][letterIndex].toUpperCase()) > 0.7
-        || (DATA[wordIndex][letterIndex].toUpperCase() === "T" &&
-         map.get(DATA[wordIndex][letterIndex].toUpperCase())>0.4)
+      || (DATA[wordIndex][letterIndex].toUpperCase() === "T" &&
+        map.get(DATA[wordIndex][letterIndex].toUpperCase()) > 0.4)
     ) {
       setPauseRight(true);
       if (DATA[wordIndex].length === letterIndex + 1 && DATA.length === wordIndex + 1) {
@@ -119,6 +121,7 @@ const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], re
 
       });
       camera.start();
+      setLoading(false);
 
       return () => { camera.stop() }
     }
@@ -141,7 +144,7 @@ const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], re
   if (wordIndex === -1) return <div className='h-screen w-screen bg-indigo-500'></div>
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden flex bg-white">
+    <div className="relative w-screen h-screen overflow-hidden flex bg-indigo-500">
       <div className="top-0 h-screen w-[30vw] left-0 bg-indigo-500 p-4 flex flex-col items-center text-white">
         {!testMode && <img className="mt-auto p-2 rounded-lg bg-white h-[125px] w-[125px]" src={"/asl/" + DATA[wordIndex][letterIndex].toLowerCase() + ".jpg"} />}
         <div className={`my-auto text-[12rem] font-semibold uppercase ${pauseRight && "text-green-500"}`}>{DATA[wordIndex][letterIndex] === " " ? "_" : DATA[wordIndex][letterIndex]}</div>
@@ -157,9 +160,9 @@ const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], re
         </div>
 
       </div>
-      <div className="text-center h-screen w-[70vw] grid items-center bg-indigo-500 absolute top-0 right-0 z-0 text-white text-2xl font-semibold">
+      {loading && <div className="z-50 text-center h-screen w-[70vw] grid items-center bg-indigo-500 absolute top-0 right-0 text-white text-2xl font-semibold">
         Loading model...
-      </div>
+      </div>}
       <div className="absolute top-0 right-0 h-screen z-10 grayscale">
         <Webcam
           ref={webcamRef}

@@ -9,6 +9,6 @@ export default function page() {
     <MainView DATA={["A loyal turtle",
       "You are loyal",
       "The quiet air",
-      "You are truley a hero"]} redirectLink="/?step=3" />
+      "You are truly a hero"]} redirectLink="/?step=3" />
   )
 }

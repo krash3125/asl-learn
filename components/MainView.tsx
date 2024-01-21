@@ -120,8 +120,10 @@ const MainView = ({ DATA, redirectLink, testMode = false }: { DATA: string[], re
         height: 720,
 
       });
-      camera.start();
-      setLoading(false);
+      (async () => {
+        await camera.start();
+        setLoading(false);
+      })();
 
       return () => { camera.stop() }
     }
